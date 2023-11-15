@@ -44,7 +44,14 @@
                         <p class="text-muted mb-4">...</p>
                     </div>
                 </div>
-                <div class="col"><button class="btn btn-primary" type="button">Load photo</button></div>
+                <div class="col">
+                    <button class="btn btn-primary" type="button" onclick="document.getElementById('file-input').click()">Load photo</button>
+                    <form method="post" enctype="multipart/form-data" style="display: none;">
+                        {% csrf_token %}
+                        <input id="file-input" type="file" name="photo" onchange="document.getElementById('upload-form').submit()">
+                        <button id="submit-btn" type="submit">Upload photo</button>
+                    </form>
+                </div>
                 <div class="col">
                     <div class="btn-group" role="group"><button class="btn btn-primary" type="button">Yes</button><button class="btn btn-primary" type="button">No</button></div>
                 </div>
