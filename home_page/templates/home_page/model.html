@@ -37,7 +37,7 @@
                 </div>
             </div>
             <div class="row row-cols-1 row-cols-md-2 mx-auto" style="max-width: 900px;">
-                <div class="col mb-5"><img></div>
+                <div class="col mb-5"><img id="selected-image" alt=""></div>
                 <div class="col d-md-flex align-items-md-end align-items-lg-center mb-5">
                     <div>
                         <h5 class="fw-bold">Class of detail is:</h5>
@@ -60,6 +60,22 @@
     </section>
     <script src={% static 'assets/bootstrap/js/bootstrap.min.js' %}></script>
     <script src={% static 'assets/js/bold-and-dark.js' %}></script>
+    <script>
+        function handleFileSelect(event) {
+            var file = event.target.files[0];
+            var reader = new FileReader();
+
+            var img = document.getElementById('selected-image');
+            reader.onload = function(e) {
+                img.src = e.target.result;
+            }
+
+            reader.readAsDataURL(file);
+        }
+
+        var fileInput = document.getElementById('file-input');
+        fileInput.addEventListener('change', handleFileSelect, false);
+    </script>
 </body>
 
 </html>
