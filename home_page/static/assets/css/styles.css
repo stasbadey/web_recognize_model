@@ -9,7 +9,7 @@
 
 .percentage-text {
     position: absolute;
-    top: -30px; /* Измените эту величину в соответствии с вашими потребностями */
+    top: -30px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 18px;
