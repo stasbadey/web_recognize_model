@@ -5,7 +5,7 @@ import os
 import cv2
 import numpy as np
 import tensorflow as tf
-from .models import Response
+from .models import Response, DataEntry
 
 
 # Create your views here.
@@ -48,6 +48,11 @@ def get_percentage(request):
     return JsonResponse({'percentage': 0})
 
 
+
+from django.views.decorators.csrf import csrf_exempt
+
+
+@csrf_exempt
 def model_view(request):
     if request.method == 'POST':
         boolean_value = int(request.POST.get('boolean_value', 0))
@@ -57,5 +62,6 @@ def model_view(request):
     total_entries = len(data_entries)
     true_entries = data_entries.filter(boolean_value=1).count()
     accuracy = (true_entries / total_entries) * 100 if total_entries > 0 else 0
+    rounded_accuracy = round(accuracy, 2)
 
-    return render(request, 'your_template.html', {'accuracy': accuracy})
+    return HttpResponse(str(rounded_accuracy))
