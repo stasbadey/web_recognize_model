@@ -55,10 +55,9 @@
                 </div>
                 <div class="col">
                     <div class="btn-group" role="group">
-                        <div class="percentage-text">100%</div>
-                        <button class="btn btn-primary" type="button">Yes</button>
-                        <button class="btn btn-primary" type="button">No</button>
-                        <div class="percentage-text"></div>
+                        <div class="percentage-text">{{ accuracy }}%</div>
+                        <button id="yes-btn" class="btn btn-primary" type="button">Yes</button>
+                        <button id="no-btn" class="btn btn-primary" type="button">No</button>
                     </div>
                 </div>
             </div>
@@ -111,6 +110,45 @@
         var fileInput = document.getElementById('file-input');
         fileInput.addEventListener('change', handleFileSelect, false);
     </script>
+
+    <script>
+    function saveResponse(response) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '{% url "home_page:save_response" %}', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    // Успешно сохранено
+                    updatePercentage();
+                } else {
+                    // Ошибка при сохранении
+                    alert('Error occurred while saving the response. Please try again.');
+                }
+            }
+        };
+        xhr.send('response=' + response);
+    }
+
+    function updatePercentage() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '{% url "home_page:get_percentage" %}', true);
+    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                var responseData = JSON.parse(xhr.responseText);
+                var percentage = responseData.percentage.toFixed(2);  // Округляем до 2 знаков после запятой
+                document.getElementsByClassName('percentage-text')[1].textContent = percentage + '%';
+            } else {
+                alert('Error occurred while retrieving the percentage. Please try again.');
+            }
+        }
+    };
+    xhr.send();
+}
+</script>
 </body>
 
 </html>
