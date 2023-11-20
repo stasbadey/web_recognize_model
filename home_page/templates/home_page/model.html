@@ -58,6 +58,7 @@
                         <div class="percentage-text">{{ accuracy }}%</div>
                         <button id="yes-btn" class="btn btn-primary" type="button">Yes</button>
                         <button id="no-btn" class="btn btn-primary" type="button">No</button>
+                        <div class="percentage-text"></div>
                     </div>
                 </div>
             </div>
@@ -111,50 +112,73 @@
         fileInput.addEventListener('change', handleFileSelect, false);
     </script>
 
-<script>
-    // Ожидаем загрузки страницы
-    document.addEventListener('DOMContentLoaded', function() {
-        // Получаем кнопки "Yes" и "No" по идентификаторам
-        var yesBtn = document.getElementById('yes-btn');
-        var noBtn = document.getElementById('no-btn');
+    <script>
+        // Ожидаем загрузки страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Получаем кнопки "Yes" и "No" по идентификаторам
+            var yesBtn = document.getElementById('yes-btn');
+            var noBtn = document.getElementById('no-btn');
 
-        // Добавляем обработчики событий для кнопок
-        yesBtn.addEventListener('click', function() {
-            sendData(1); // Отправляем значение 1 (True) на сервер
+            // Добавляем обработчики событий для кнопок
+            yesBtn.addEventListener('click', function() {
+                sendData(1); // Отправляем значение 1 (True) на сервер
+            });
+
+            noBtn.addEventListener('click', function() {
+                sendData(0); // Отправляем значение 0 (False) на сервер
+            });
+
+            // Функция для отправки данных на сервер
+            function sendData(booleanValue) {
+                // Создаем новый объект XMLHttpRequest
+                var xhr = new XMLHttpRequest();
+
+                // Определяем метод и URL для отправки данных
+                xhr.open('POST', '/model/model_view/', true);
+
+                // Устанавливаем заголовки запроса
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+                // Определяем обработчик события при завершении запроса
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        // Обновляем процент точности на странице
+                        var accuracyText = document.querySelector('.percentage-text');
+                        accuracyText.textContent = xhr.responseText + '%';
+                    }
+                };
+
+                // Формируем данные для отправки
+                var data = 'boolean_value=' + booleanValue;
+
+                // Отправляем запрос
+                xhr.send(data);
+            }
         });
+    </script>
 
-        noBtn.addEventListener('click', function() {
-            sendData(0); // Отправляем значение 0 (False) на сервер
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var accuracyText = document.querySelector('.percentage-text');
+
+            // Функция для отправки AJAX-запроса и обновления значения точности
+            function fetchAccuracy() {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', '/model/model_view/', true);
+
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        accuracyText.textContent = xhr.responseText + '%';
+                    }
+                };
+
+                xhr.send();
+            }
+
+            // Вызываем функцию при загрузке страницы
+            fetchAccuracy();
         });
-
-        // Функция для отправки данных на сервер
-        function sendData(booleanValue) {
-            // Создаем новый объект XMLHttpRequest
-            var xhr = new XMLHttpRequest();
-
-            // Определяем метод и URL для отправки данных
-            xhr.open('POST', '/model/model_view/', true);
-
-            // Устанавливаем заголовки запроса
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-            // Определяем обработчик события при завершении запроса
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    // Обновляем процент точности на странице
-                    var accuracyText = document.querySelector('.percentage-text');
-                    accuracyText.textContent = xhr.responseText + '%';
-                }
-            };
-
-            // Формируем данные для отправки
-            var data = 'boolean_value=' + booleanValue;
-
-            // Отправляем запрос
-            xhr.send(data);
-        }
-    });
-</script>
+    </script>
 </body>
 
 </html>

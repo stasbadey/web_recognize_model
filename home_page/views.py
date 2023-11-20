@@ -5,7 +5,7 @@ import os
 import cv2
 import numpy as np
 import tensorflow as tf
-from .models import Response, DataEntry
+from .models import DataEntry
 
 
 # Create your views here.
