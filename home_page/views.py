@@ -4,7 +4,6 @@ from keras.models import load_model
 import os
 import cv2
 import numpy as np
-import tensorflow as tf
 from .models import DataEntry
 
 
@@ -20,33 +19,15 @@ def model(request):
 def classify_image(request):
     if request.method == 'POST' and request.FILES['photo']:
         image = request.FILES['photo']
-        model = load_model(os.path.join('models', 'anotherclassifier.h5'))
+        model = load_model(os.path.join('models', 'classifier.h5'))
         img = cv2.imdecode(np.frombuffer(image.read(), np.uint8), cv2.IMREAD_COLOR)
         resize = cv2.resize(img, (256, 256))
         yhat = model.predict(np.expand_dims(resize / 255, 0))
-        predicted_class = 'Normal' if yhat[0][0] > 0.7 else 'Defected'
+        predicted_class = '''Model can't recognize that image''' if yhat[0][0] >= 0.99 or yhat[0][0] < 0.1 else 'Normal' if yhat[0][0] > 0.7 else 'Defected'
         print(yhat[0][0])
         return JsonResponse({'predicted_class': predicted_class})
     else:
         return JsonResponse({'error': 'Image file is missing or invalid.'})
-
-def save_response(request):
-    if request.method == 'POST':
-        response_value = int(request.POST.get('response'))
-        response = Response(boolean_value=response_value)
-        response.save()
-        return HttpResponse(status=200)
-    return HttpResponse(status=400)
-
-def get_percentage(request):
-    total_responses = Response.objects.count()
-    if total_responses > 0:
-        positive_responses = Response.objects.filter(boolean_value=1).count()
-        percentage = (positive_responses / total_responses) * 100
-        rounded_percentage = round(percentage, 2)  # Округляем до 2 знаков после запятой
-        return JsonResponse({'percentage': rounded_percentage})
-    return JsonResponse({'percentage': 0})
-
 
 
 from django.views.decorators.csrf import csrf_exempt
